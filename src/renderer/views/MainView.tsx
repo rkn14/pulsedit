@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { FileExplorer } from '@renderer/components/FileExplorer'
 import { WaveformPanel } from '@renderer/components/WaveformPanel'
 import { EffectsPanel } from '@renderer/components/EffectsPanel'
 import { TransportBar } from '@renderer/components/TransportBar'
+import { ExportModal } from '@renderer/components/ExportModal'
 import { useAppStore } from '@renderer/store/appStore'
 import {
   startPlaybackFromDecoded,
@@ -26,6 +27,7 @@ function spaceBarShouldPlay(e: KeyboardEvent): boolean {
 }
 
 export function MainView() {
+  const [exportOpen, setExportOpen] = useState(false)
   const undo = useAppStore((s) => s.undo)
   const redo = useAppStore((s) => s.redo)
 
@@ -77,7 +79,8 @@ export function MainView() {
         <WaveformPanel />
         <EffectsPanel />
       </div>
-      <TransportBar />
+      <TransportBar onOpenExport={() => setExportOpen(true)} />
+      <ExportModal open={exportOpen} onClose={() => setExportOpen(false)} />
     </div>
   )
 }

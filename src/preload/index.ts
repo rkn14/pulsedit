@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { PulseditApi } from '../shared/ipc'
+import type { ExportAudioResult, PulseditApi } from '../shared/ipc'
 import type { ExplorerEntry, VolumeInfo } from '../shared/types'
 
 const api: PulseditApi = {
@@ -15,6 +15,9 @@ const api: PulseditApi = {
     ipcRenderer.invoke('pulsedit:getInitialExplorerRoot'),
 
   listVolumes: (): Promise<VolumeInfo[]> => ipcRenderer.invoke('pulsedit:listVolumes'),
+
+  exportAudio: (payload): Promise<ExportAudioResult> =>
+    ipcRenderer.invoke('pulsedit:exportAudio', payload),
 }
 
 contextBridge.exposeInMainWorld('pulsedit', api)

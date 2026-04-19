@@ -1,7 +1,11 @@
 import { useAppStore } from '@renderer/store/appStore'
 import { startPlaybackFromDecoded, stopPlayback } from '@renderer/audio/playbackEngine'
 
-export function TransportBar() {
+type TransportBarProps = {
+  onOpenExport?: () => void
+}
+
+export function TransportBar({ onOpenExport }: TransportBarProps) {
   const playback = useAppStore((s) => s.playback)
   const asset = useAppStore((s) => s.currentAsset)
   const internalCh = useAppStore((s) => s.internalBufferChannelCount)
@@ -38,6 +42,14 @@ export function TransportBar() {
           }}
         >
           Stop
+        </button>
+        <button
+          type="button"
+          disabled={!canPlay}
+          className="rounded border border-surface-border bg-surface-raised px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+          onClick={() => onOpenExport?.()}
+        >
+          Exporter…
         </button>
       </div>
       <div className="flex flex-col gap-0.5 text-xs text-zinc-300">
