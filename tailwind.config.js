@@ -1,0 +1,16 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/renderer/index.html', './src/renderer/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        surface: {
+          DEFAULT: '#12141a',
+          raised: '#1a1d26',
+          border: '#2a2f3c',
+        },
+      },
+    },
+  },
+  plugins: [],
+}

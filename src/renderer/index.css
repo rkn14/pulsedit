@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Ascenseurs — thème sombre type DAW (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3d4658 #161920;
+}
+
+/* Ascenseurs — Chromium / Electron */
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #161920;
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #454e63 0%, #3a4254 100%);
+  border-radius: 5px;
+  border: 2px solid #161920;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #556075 0%, #4a5266 100%);
+}
+
+*::-webkit-scrollbar-corner {
+  background: #161920;
+}
