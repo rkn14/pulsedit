@@ -1,4 +1,5 @@
 import type { DecodedPcm } from '../decodedRegistry'
+import { appendSilenceTail } from './extendDuration'
 import { clonePcm } from './clonePcm'
 
 function clamp01(x: number): number {
@@ -44,8 +45,16 @@ function combStep(inp: number, st: CombState, g: number): number {
   return d
 }
 
-/** Réverb à peigne (4 lignes en parallèle, type freeverb simplifié). */
-export function applyReverb(input: DecodedPcm, room: number, mix: number): DecodedPcm {
+/**
+ * Réverb à peigne (4 lignes en parallèle, type freeverb simplifié).
+ * @param tailSec silence ajouté **avant** le traitement pour laisser la queue se finir (0 = inchangé).
+ */
+export function applyReverb(
+  input: DecodedPcm,
+  room: number,
+  mix: number,
+  tailSec = 0
+): DecodedPcm {
   const sr = input.sampleRate
   const scale = sr / 44100
   const delays = [1116, 1188, 1277, 1356].map((d) =>
@@ -53,7 +62,8 @@ export function applyReverb(input: DecodedPcm, room: number, mix: number): Decod
   )
   const fb = 0.75 + clamp01(room) * 0.22
   const m = clamp01(mix)
-  const out = clonePcm(input)
+  const padded = tailSec > 0 ? appendSilenceTail(input, tailSec) : input
+  const out = clonePcm(padded)
 
   for (let c = 0; c < out.channelData.length; c++) {
     const x = out.channelData[c]!

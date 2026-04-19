@@ -7,6 +7,18 @@ import {
   applyReverb,
   applyTremolo,
 } from './creativeEffects'
+import {
+  applyBitcrusher,
+  applyCompressor,
+  applyDistortion,
+  applyEq3,
+  applyFlanger,
+  applyPhaser,
+} from './secondWaveEffects'
+import {
+  applyPitchSemitones,
+  applyTimeStretchRatio,
+} from './pitchTimeStretch'
 import { clonePcm } from './clonePcm'
 
 function dbToLinear(db: number): number {
@@ -157,6 +169,12 @@ function applyOne(input: DecodedPcm, fx: EffectInstance): DecodedPcm {
       return applyFadeOut(input, p.durationSec ?? 0)
     case 'normalize':
       return applyNormalize(input, p.targetPeak ?? 0.99)
+    case 'pitch': {
+      const st = (p.semitones ?? 0) + (p.cents ?? 0) / 100
+      return applyPitchSemitones(input, st)
+    }
+    case 'timeStretch':
+      return applyTimeStretchRatio(input, p.ratio ?? 1)
     case 'pan':
       return applyPan(input, p.pan ?? 0)
     case 'delay':
@@ -167,7 +185,12 @@ function applyOne(input: DecodedPcm, fx: EffectInstance): DecodedPcm {
         p.mix ?? 0.35
       )
     case 'reverb':
-      return applyReverb(input, p.room ?? 0.5, p.mix ?? 0.35)
+      return applyReverb(
+        input,
+        p.room ?? 0.5,
+        p.mix ?? 0.35,
+        p.tailSec ?? 0
+      )
     case 'chorus':
       return applyChorus(
         input,
@@ -177,6 +200,34 @@ function applyOne(input: DecodedPcm, fx: EffectInstance): DecodedPcm {
       )
     case 'tremolo':
       return applyTremolo(input, p.rateHz ?? 5, p.depth ?? 0.4)
+    case 'phaser':
+      return applyPhaser(input, p.rateHz ?? 0.6, p.depth ?? 0.65, p.mix ?? 0.45)
+    case 'flanger':
+      return applyFlanger(
+        input,
+        p.rateHz ?? 0.45,
+        p.depthMs ?? 1.8,
+        p.feedback ?? 0.4,
+        p.mix ?? 0.42
+      )
+    case 'distortion':
+      return applyDistortion(input, p.drive ?? 0.25)
+    case 'bitcrusher':
+      return applyBitcrusher(
+        input,
+        p.bits ?? 10,
+        p.downsample ?? 2
+      )
+    case 'compressor':
+      return applyCompressor(
+        input,
+        p.thresholdDb ?? -20,
+        p.ratio ?? 4,
+        p.attackMs ?? 5,
+        p.releaseMs ?? 120
+      )
+    case 'eq':
+      return applyEq3(input, p.lowDb ?? 0, p.midDb ?? 0, p.highDb ?? 0)
     case 'stereoToMono':
       return applyStereoToMono(input)
     default:

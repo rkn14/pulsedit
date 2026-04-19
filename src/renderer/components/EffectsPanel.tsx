@@ -4,6 +4,8 @@ import type { EffectChain, EffectInstance } from '@shared/types'
 import { rebuildPreview } from '@renderer/audio/rebuildPreview'
 import { getSourcePcm } from '@renderer/audio/decodedRegistry'
 import { upsertEffect, removeEffectOfType } from '@renderer/audio/effectUtils'
+import { SecondWaveEffectsBlocks } from '@renderer/components/SecondWaveEffectsBlocks'
+import { PitchTimeEffectsBlocks } from '@renderer/components/PitchTimeEffectsBlocks'
 
 function previewToSourceRange(
   selection: { start: number; end: number },
@@ -54,12 +56,20 @@ export function EffectsPanel() {
   const fadeInFx = effects.find((e) => e.type === 'fadeIn')
   const fadeOutFx = effects.find((e) => e.type === 'fadeOut')
   const normFx = effects.find((e) => e.type === 'normalize')
+  const pitchFx = effects.find((e) => e.type === 'pitch')
+  const timeStretchFx = effects.find((e) => e.type === 'timeStretch')
   const monoFx = effects.find((e) => e.type === 'stereoToMono')
   const panFx = effects.find((e) => e.type === 'pan')
   const delayFx = effects.find((e) => e.type === 'delay')
   const reverbFx = effects.find((e) => e.type === 'reverb')
   const chorusFx = effects.find((e) => e.type === 'chorus')
   const tremoloFx = effects.find((e) => e.type === 'tremolo')
+  const phaserFx = effects.find((e) => e.type === 'phaser')
+  const flangerFx = effects.find((e) => e.type === 'flanger')
+  const distortionFx = effects.find((e) => e.type === 'distortion')
+  const bitcrusherFx = effects.find((e) => e.type === 'bitcrusher')
+  const compressorFx = effects.find((e) => e.type === 'compressor')
+  const eqFx = effects.find((e) => e.type === 'eq')
   const trimFx = effects.find((e) => e.type === 'trim')
   /** Source fichier (avant chaîne) : le pan s’applique avant le mixage mono. */
   const isStereoSource = Boolean(
@@ -283,6 +293,15 @@ export function EffectsPanel() {
           )}
         </section>
 
+        <PitchTimeEffectsBlocks
+          assetId={assetId}
+          canEdit={canEdit}
+          pushHistorySnapshot={pushHistorySnapshot}
+          commit={commit}
+          pitchFx={pitchFx}
+          timeStretchFx={timeStretchFx}
+        />
+
         <section
           onPointerDown={() => {
             if (canEdit && isStereoSource) {
@@ -461,7 +480,8 @@ export function EffectsPanel() {
         <section>
           <h3 className="mb-2 font-medium text-zinc-300">Réverb</h3>
           <p className="mb-2 text-[0.6875rem] leading-snug text-zinc-300">
-            Salle (4 peignes). Mix sec / humide.
+            Salle (4 peignes). Mix sec / humide. Queue : silence ajouté en fin pour
+            laisser la réverb s&apos;éteindre (allonge la durée totale).
           </p>
           {!reverbFx ? (
             <button
@@ -476,7 +496,7 @@ export function EffectsPanel() {
                   id: crypto.randomUUID(),
                   type: 'reverb',
                   enabled: true,
-                  params: { room: 0.5, mix: 0.35 },
+                  params: { room: 0.5, mix: 0.35, tailSec: 0 },
                 }
                 commit((c) => upsertEffect(c, fx))
               }}
@@ -540,6 +560,33 @@ export function EffectsPanel() {
                 />
                 <span className="w-12 tabular-nums text-zinc-300">
                   {(reverbFx.params.mix ?? 0).toFixed(2)}
+                </span>
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="w-14 text-zinc-300">Queue</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={4}
+                  step={0.05}
+                  disabled={!canEdit}
+                  value={reverbFx.params.tailSec ?? 0}
+                  onChange={(e) => {
+                    if (!assetId) {
+                      return
+                    }
+                    const tailSec = Number(e.target.value)
+                    const fx: EffectInstance = {
+                      ...reverbFx,
+                      params: { ...reverbFx.params, tailSec },
+                    }
+                    setEffects(upsertEffect(useAppStore.getState().effects, fx))
+                    rebuildPreview(assetId)
+                  }}
+                  className="flex-1 accent-sky-600"
+                />
+                <span className="w-12 tabular-nums text-zinc-300">
+                  {(reverbFx.params.tailSec ?? 0).toFixed(2)}s
                 </span>
               </label>
               <button
@@ -769,6 +816,19 @@ export function EffectsPanel() {
             </div>
           )}
         </section>
+
+        <SecondWaveEffectsBlocks
+          assetId={assetId}
+          canEdit={canEdit}
+          pushHistorySnapshot={pushHistorySnapshot}
+          commit={commit}
+          phaserFx={phaserFx}
+          flangerFx={flangerFx}
+          distortionFx={distortionFx}
+          bitcrusherFx={bitcrusherFx}
+          compressorFx={compressorFx}
+          eqFx={eqFx}
+        />
 
         <section>
           <h3 className="mb-2 font-medium text-zinc-300">Canaux</h3>

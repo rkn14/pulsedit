@@ -19,6 +19,11 @@ export type RebuildResult = {
 
 /**
  * Recalcule l’aperçu à partir du source + chaîne d’effets, met à jour le registre et le store.
+ *
+ * La durée affichée suit **la longueur du PCM de sortie** (`frames / sampleRate`).
+ * Les effets qui rallongent le buffer (time stretch avec ratio supérieur à 1, pitch, silence ou
+ * queue ajoutée avant un traitement, etc.) mettent donc à jour la durée sans logique
+ * supplémentaire ici.
  */
 export function rebuildPreview(assetId: string): RebuildResult | null {
   const source = getSourcePcm(assetId)
