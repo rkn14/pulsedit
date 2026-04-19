@@ -14,8 +14,16 @@ body,
 }
 
 body {
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   color: #f4f4f5; /* zinc-100 — lisibilité sur fond sombre */
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
@@ -102,3 +110,73 @@ body {
 }
 
 /* Styles de la région d’édition WaveSurfer : injectés dans le shadow DOM (voir WaveformPanel). */
+
+@layer components {
+  /** Titres de colonnes (explorateur, waveform, effets) */
+  .panel-title {
+    @apply text-xs font-semibold uppercase tracking-wide text-zinc-300;
+  }
+
+  /** Légende / aide sous un titre de panneau */
+  .panel-hint {
+    @apply text-[0.625rem] leading-snug text-muted-soft;
+  }
+
+  /** Bouton standard barre d’outils / transport */
+  .btn-bar {
+    @apply rounded border border-surface-border bg-surface-raised px-3 py-1.5 text-sm text-zinc-200 transition-colors;
+  }
+
+  .btn-bar:hover:not(:disabled) {
+    @apply border-zinc-500/35 bg-[#1f232e] text-zinc-50;
+  }
+
+  .btn-bar:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+
+  /** Bouton compact (panneau effets, petites actions) */
+  .btn-bar-sm {
+    @apply rounded border border-surface-border bg-surface-raised px-2 py-1 text-[0.6875rem] text-zinc-200 transition-colors;
+  }
+
+  .btn-bar-sm:hover:not(:disabled) {
+    @apply border-zinc-500/35 bg-[#1f232e] text-zinc-50;
+  }
+
+  .btn-bar-sm:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+
+  /** Action positive (export, validation) */
+  .btn-bar-accent {
+    @apply rounded border border-emerald-900/70 bg-emerald-950/45 px-3 py-1.5 text-sm text-emerald-100 transition-colors;
+  }
+
+  .btn-bar-accent:hover:not(:disabled) {
+    @apply border-emerald-700/50 bg-emerald-950/65 text-emerald-50;
+  }
+
+  .btn-bar-accent:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+}
+
+/* Focus clavier — anneau discret (hors curseurs range pour éviter le double rendu) */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+}
+
+input:focus-visible:not([type='range']):not([type='checkbox']):not([type='radio']) {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+}
+
+input[type='checkbox']:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.45);
+}

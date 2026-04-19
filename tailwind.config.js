@@ -9,6 +9,11 @@ export default {
           raised: '#1a1d26',
           border: '#2a2f3c',
         },
+        /** Texte secondaire — légèrement plus chaud que zinc pur */
+        muted: {
+          DEFAULT: '#a1a1aa',
+          soft: '#71717a',
+        },
       },
     },
   },

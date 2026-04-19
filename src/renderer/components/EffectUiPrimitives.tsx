@@ -97,7 +97,7 @@ export function ResetParamsButton(props: {
     <button
       type="button"
       disabled={props.disabled}
-      className="w-full rounded border border-surface-border px-2 py-1 text-[0.6875rem] text-zinc-300 hover:bg-zinc-800 disabled:opacity-40"
+      className="btn-bar-sm w-full"
       onClick={props.onClick}
     >
       {props.children ?? 'Réinitialiser paramètres'}

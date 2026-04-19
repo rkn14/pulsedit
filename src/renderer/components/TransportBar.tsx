@@ -18,12 +18,12 @@ export function TransportBar({ onOpenExport }: TransportBarProps) {
       : '—'
 
   return (
-    <div className="flex h-14 shrink-0 items-center gap-4 border-t border-surface-border bg-surface px-4">
+    <div className="flex min-h-14 shrink-0 flex-wrap items-center gap-x-4 gap-y-1 border-t border-surface-border bg-surface px-4 py-2">
       <div className="flex items-center gap-2">
         <button
           type="button"
           disabled={!canPlay}
-          className="rounded border border-surface-border bg-surface-raised px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+          className="btn-bar"
           onClick={() => {
             if (!asset) {
               return
@@ -36,7 +36,7 @@ export function TransportBar({ onOpenExport }: TransportBarProps) {
         <button
           type="button"
           disabled={!playback.isPlaying}
-          className="rounded border border-surface-border bg-surface-raised px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+          className="btn-bar"
           onClick={() => {
             stopPlayback()
           }}
@@ -46,7 +46,7 @@ export function TransportBar({ onOpenExport }: TransportBarProps) {
         <button
           type="button"
           disabled={!canPlay}
-          className="rounded border border-surface-border bg-surface-raised px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+          className="btn-bar"
           onClick={() => onOpenExport?.()}
         >
           Exporter…
@@ -64,6 +64,10 @@ export function TransportBar({ onOpenExport }: TransportBarProps) {
           </span>
         )}
       </div>
+      <p className="panel-hint ml-auto max-w-[28rem]">
+        Raccourcis : Espace lecture · + / − zoom · Ctrl+Z annuler · Ctrl+Y ou Ctrl+⇧+Z refaire ·
+        Ctrl+⇧+Retour arrière retirer le dernier effet
+      </p>
     </div>
   )
 }

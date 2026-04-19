@@ -537,9 +537,7 @@ export function WaveformPanel() {
   return (
     <div className="relative z-10 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#141924]">
       <div className="shrink-0 border-b border-surface-border bg-surface-raised/40 px-3 py-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-300">
-          Waveform
-        </h2>
+        <h2 className="panel-title">Waveform</h2>
         {asset ? (
           <div className="mt-1 space-y-0.5 text-xs text-zinc-300">
             <p className="truncate" title={asset.filePath}>
@@ -553,7 +551,13 @@ export function WaveformPanel() {
             )}
             {status === 'loading' && <p className="text-zinc-300">Chargement…</p>}
             {status === 'error' && errorMessage && (
-              <p className="text-red-400">{errorMessage}</p>
+              <div className="space-y-1">
+                <p className="text-red-400">{errorMessage}</p>
+                <p className="text-[0.6875rem] text-zinc-500">
+                  Vérifiez que le fichier existe, qu’il n’est pas ouvert ailleurs en exclusif et qu’il
+                  s’agit d’un format audio pris en charge.
+                </p>
+              </div>
             )}
           </div>
         ) : (
@@ -571,7 +575,7 @@ export function WaveformPanel() {
               <div className="flex shrink-0 items-center gap-2 border-t border-surface-border bg-[#0f1218] px-2 py-1.5">
                 <span
                   className="w-[5.5rem] shrink-0 text-right text-xs font-medium tabular-nums text-sky-300/90"
-                  title="Par rapport au zoom initial (100 % = densité par défaut)"
+                  title="Par rapport au zoom initial (100 % = densité par défaut). Touches + et − pour zoomer."
                 >
                   Zoom {waveformUi.zoomPercent} %
                 </span>
@@ -601,8 +605,12 @@ export function WaveformPanel() {
           </>
         )}
         {!asset && (
-          <div className="flex min-h-[160px] flex-1 items-center justify-center bg-[#141924] text-sm text-zinc-300">
-            Aucune forme d’onde
+          <div className="flex min-h-[200px] flex-1 flex-col items-center justify-center gap-3 bg-[#141924] px-8 text-center">
+            <p className="text-sm font-medium text-zinc-200">Aucun fichier ouvert</p>
+            <p className="max-w-md text-xs leading-relaxed text-zinc-500">
+              Choisissez un fichier audio dans l’explorateur à gauche (WAV, MP3, FLAC, etc.). Le sample
+              est chargé en mémoire pour l’édition et l’aperçu.
+            </p>
           </div>
         )}
       </div>

@@ -79,9 +79,10 @@ export function EffectsPanel() {
   return (
     <div className="relative z-20 flex h-full min-h-0 w-80 shrink-0 flex-col border-l border-surface-border bg-surface shadow-[-12px_0_32px_rgba(0,0,0,0.55)]">
       <div className="shrink-0 border-b border-surface-border px-3 py-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-300">
-          Édition
-        </h2>
+        <h2 className="panel-title">Édition</h2>
+        <p className="panel-hint mt-1">
+          Chaîne d’effets : ordre = traitement. Ctrl+⇧+Retour arrière retire le dernier bloc.
+        </p>
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-3 text-xs text-zinc-300">
@@ -89,7 +90,7 @@ export function EffectsPanel() {
           <button
             type="button"
             disabled={!canEdit}
-            className="rounded border border-surface-border bg-surface-raised px-2 py-1 text-[0.6875rem] text-zinc-300 hover:text-zinc-200 disabled:opacity-40"
+            className="btn-bar-sm"
             onClick={() => undo()}
           >
             Annuler
@@ -97,7 +98,7 @@ export function EffectsPanel() {
           <button
             type="button"
             disabled={!canEdit}
-            className="rounded border border-surface-border bg-surface-raised px-2 py-1 text-[0.6875rem] text-zinc-300 hover:text-zinc-200 disabled:opacity-40"
+            className="btn-bar-sm"
             onClick={() => redo()}
           >
             Rétablir
@@ -266,7 +267,7 @@ export function EffectsPanel() {
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -364,7 +365,7 @@ export function EffectsPanel() {
             <button
               type="button"
               disabled={!canEdit}
-              className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+              className="btn-bar-sm w-full py-1.5"
               onClick={() => {
                 if (!assetId) {
                   return
@@ -487,7 +488,7 @@ export function EffectsPanel() {
             <button
               type="button"
               disabled={!canEdit}
-              className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+              className="btn-bar-sm w-full py-1.5"
               onClick={() => {
                 if (!assetId) {
                   return
@@ -609,7 +610,7 @@ export function EffectsPanel() {
             <button
               type="button"
               disabled={!canEdit}
-              className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+              className="btn-bar-sm w-full py-1.5"
               onClick={() => {
                 if (!assetId) {
                   return
@@ -731,7 +732,7 @@ export function EffectsPanel() {
             <button
               type="button"
               disabled={!canEdit}
-              className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+              className="btn-bar-sm w-full py-1.5"
               onClick={() => {
                 if (!assetId) {
                   return
@@ -835,7 +836,7 @@ export function EffectsPanel() {
           <button
             type="button"
             disabled={!canEdit || asset?.channels === 1}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return

@@ -10,6 +10,20 @@ type Props = {
   onClose: () => void
 }
 
+function humanizeExportError(raw: string): string {
+  const lower = raw.toLowerCase()
+  if (
+    (lower.includes('ffmpeg') || lower.includes('enoent')) &&
+    !lower.includes('ffmpeg-static')
+  ) {
+    return `${raw} — Pour AIFF/MP3, FFmpeg doit être disponible (binaire embarqué npm ffmpeg-static).`
+  }
+  if (lower.includes('eacces') || lower.includes('permission')) {
+    return `${raw} — Essayez un autre dossier (droits d’écriture).`
+  }
+  return raw
+}
+
 export function ExportModal({ open, onClose }: Props) {
   const currentAsset = useAppStore((s) => s.currentAsset)
   const selection = useAppStore((s) => s.selection)
@@ -54,10 +68,12 @@ export function ExportModal({ open, onClose }: Props) {
       } else if ('canceled' in result && result.canceled) {
         onClose()
       } else if ('error' in result) {
-        setError(result.error)
+        setError(humanizeExportError(result.error))
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(
+        humanizeExportError(e instanceof Error ? e.message : String(e))
+      )
     } finally {
       setBusy(false)
     }
@@ -107,18 +123,13 @@ export function ExportModal({ open, onClose }: Props) {
         {message && <p className="mt-3 text-xs text-emerald-400">{message}</p>}
 
         <div className="mt-4 flex justify-end gap-2">
-          <button
-            type="button"
-            className="rounded border border-surface-border px-3 py-1.5 text-sm text-zinc-300"
-            onClick={onClose}
-            disabled={busy}
-          >
+          <button type="button" className="btn-bar" onClick={onClose} disabled={busy}>
             {message ? 'Fermer' : 'Annuler'}
           </button>
           {!message && (
             <button
               type="button"
-              className="rounded border border-emerald-900/80 bg-emerald-950/50 px-3 py-1.5 text-sm text-emerald-100 disabled:opacity-50"
+              className="btn-bar-accent"
               onClick={() => void runExport()}
               disabled={busy}
             >

@@ -9,6 +9,8 @@ import {
   startPlaybackFromDecoded,
   stopPlayback,
 } from '@renderer/audio/playbackEngine'
+import { rebuildPreview } from '@renderer/audio/rebuildPreview'
+import { nudgeWaveformZoom } from '@renderer/audio/waveformBridge'
 
 /** Espace : lecture sauf si le focus est dans un champ texte (pas les sliders). */
 function spaceBarShouldPlay(e: KeyboardEvent): boolean {
@@ -30,6 +32,8 @@ export function MainView() {
   const [exportOpen, setExportOpen] = useState(false)
   const undo = useAppStore((s) => s.undo)
   const redo = useAppStore((s) => s.redo)
+  const pushHistorySnapshot = useAppStore((s) => s.pushHistorySnapshot)
+  const setEffects = useAppStore((s) => s.setEffects)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -46,6 +50,49 @@ export function MainView() {
         }
         return
       }
+
+      /* Zoom waveform : +/= et − (pas avec Ctrl pour éviter le zoom navigateur). */
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        spaceBarShouldPlay(e) &&
+        (e.code === 'Equal' ||
+          e.code === 'Minus' ||
+          e.code === 'NumpadAdd' ||
+          e.code === 'NumpadSubtract')
+      ) {
+        const { currentAsset } = useAppStore.getState()
+        if (!currentAsset) {
+          return
+        }
+        e.preventDefault()
+        if (e.code === 'Equal' || e.code === 'NumpadAdd') {
+          nudgeWaveformZoom(1)
+        } else {
+          nudgeWaveformZoom(-1)
+        }
+        return
+      }
+
+      /* Retirer le dernier effet de la chaîne (ordre de traitement). */
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key === 'Backspace' &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        const { currentAsset: asset, effects } = useAppStore.getState()
+        if (!asset || effects.length === 0) {
+          return
+        }
+        pushHistorySnapshot()
+        setEffects(effects.slice(0, -1))
+        rebuildPreview(asset.id)
+        return
+      }
+
       if (!(e.ctrlKey || e.metaKey)) {
         return
       }
@@ -64,7 +111,7 @@ export function MainView() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [undo, redo])
+  }, [undo, redo, pushHistorySnapshot, setEffects])
 
   return (
     <div className="flex h-full min-h-0 flex-col">

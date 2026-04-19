@@ -204,9 +204,7 @@ export function FileExplorer() {
   return (
     <div className="flex h-full min-h-0 flex-col border-r border-surface-border bg-surface">
       <div className="shrink-0 border-b border-surface-border px-3 py-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-300">
-          Explorateur
-        </h2>
+        <h2 className="panel-title">Explorateur</h2>
         {volumes.length > 0 && (
           <div className="mt-2">
             <p className="mb-1.5 text-[0.625rem] font-medium uppercase tracking-wide text-zinc-300">

@@ -57,7 +57,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -157,7 +157,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -278,7 +278,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -355,7 +355,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -445,7 +445,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return
@@ -575,7 +575,7 @@ export function SecondWaveEffectsBlocks({
           <button
             type="button"
             disabled={!canEdit}
-            className="w-full rounded border border-surface-border bg-surface-raised px-2 py-1.5 text-[0.6875rem] hover:bg-zinc-800 disabled:opacity-40"
+            className="btn-bar-sm w-full py-1.5"
             onClick={() => {
               if (!assetId) {
                 return

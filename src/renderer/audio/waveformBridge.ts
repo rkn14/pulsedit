@@ -43,3 +43,22 @@ export function clearEditRegion(): void {
 export function seekWaveformCursor(timeSec: number): void {
   instance?.setTime(Math.max(0, timeSec))
 }
+
+/** Aligné sur ZoomPlugin `maxZoom` et `minPxPerSec` par défaut du panneau waveform. */
+const ZOOM_PX_MIN = 16
+const ZOOM_PX_MAX = 512
+const ZOOM_STEP = 1.14
+
+/** Zoom avant / arrière (raccourcis +/−). Sans instance WaveSurfer, ne fait rien. */
+export function nudgeWaveformZoom(direction: 1 | -1): void {
+  const ws = instance
+  if (!ws) {
+    return
+  }
+  const z = ws.getState().zoom.value
+  const cur =
+    z > 0 ? z : (ws.options.minPxPerSec ?? 64)
+  const factor = direction === 1 ? ZOOM_STEP : 1 / ZOOM_STEP
+  const next = Math.max(ZOOM_PX_MIN, Math.min(ZOOM_PX_MAX, cur * factor))
+  ws.zoom(next)
+}

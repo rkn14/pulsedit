@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { ExportAudioFormat } from '../shared/ipc'
-import { runFfmpeg } from './ffmpeg'
+import { runFfmpeg, transcodeFileToPcmWavArrayBuffer } from './ffmpeg'
 import { isDirectory, listDirectory, listVolumes, pathExists } from './filesystem'
 
 const CH_LIST = 'pulsedit:listDirectory'
@@ -42,6 +42,12 @@ export function registerIpcHandlers(): void {
     const filePath = assertSafePath(rawPath)
     if (!(await pathExists(filePath)) || (await isDirectory(filePath))) {
       throw new Error('Fichier introuvable')
+    }
+    const ext = path.extname(filePath).toLowerCase()
+    /** Formats non décodés nativement par Chromium : passage par FFmpeg → WAV 44,1 kHz. */
+    const transcodeExts = new Set(['.flac', '.m4a'])
+    if (transcodeExts.has(ext)) {
+      return transcodeFileToPcmWavArrayBuffer(filePath)
     }
     const buf = await readFile(filePath)
     return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
