@@ -1,23 +1,25 @@
 import { create } from 'zustand'
-import type { AudioAsset, EffectChain, SelectionRange, SerializedState } from '@shared/types'
+import type {
+  AudioAsset,
+  EffectChain,
+  SelectionRange,
+  SerializedState,
+} from '@shared/types'
 
 const TARGET_SAMPLE_RATE = 44100
 
 export type PlaybackState = {
   isPlaying: boolean
-  /** position de lecture en secondes (fichier complet) */
   positionSec: number
 }
 
 export type UiState = {
   explorerCwd: string | null
-  /** dossiers ouverts dans l’arborescence (chemins complets) */
   expandedDirs: Set<string>
 }
 
 export type AppState = {
   currentAsset: AudioAsset | null
-  /** Buffer PCM interne 44.1kHz — géré hors store (référence worker plus tard) */
   internalBufferChannelCount: 1 | 2 | null
   selection: SelectionRange | null
   effects: EffectChain
@@ -33,8 +35,27 @@ export type AppState = {
   ) => void
   setInternalBufferChannels: (n: 1 | 2 | null) => void
   setSelection: (range: SelectionRange | null) => void
+  setEffects: (chain: EffectChain) => void
+  pushHistorySnapshot: () => void
+  undo: () => void
+  redo: () => void
   setPlayback: (partial: Partial<PlaybackState>) => void
   resetPlayback: () => void
+}
+
+function cloneSerializedState(s: {
+  selection: SelectionRange | null
+  effects: EffectChain
+}): SerializedState {
+  return {
+    selection: s.selection ? { ...s.selection } : null,
+    effects: s.effects.map((e) => ({
+      id: e.id,
+      type: e.type,
+      enabled: e.enabled,
+      params: { ...e.params },
+    })),
+  }
 }
 
 const initialPlayback: PlaybackState = {
@@ -77,18 +98,70 @@ export const useAppStore = create<AppState>((set) => ({
     set({
       currentAsset: asset,
       internalBufferChannelCount: null,
+      effects: [],
+      historyPast: [],
+      historyFuture: [],
+      selection: null,
     }),
 
   patchCurrentAsset: (partial) =>
     set((s) =>
-      s.currentAsset
-        ? { currentAsset: { ...s.currentAsset, ...partial } }
-        : {}
+      s.currentAsset ? { currentAsset: { ...s.currentAsset, ...partial } } : {}
     ),
 
   setInternalBufferChannels: (n) => set({ internalBufferChannelCount: n }),
 
   setSelection: (range) => set({ selection: range }),
+
+  setEffects: (chain) => set({ effects: chain }),
+
+  pushHistorySnapshot: () =>
+    set((s) => {
+      const snap = cloneSerializedState({
+        selection: s.selection,
+        effects: s.effects,
+      })
+      return {
+        historyPast: [...s.historyPast, snap].slice(-10),
+        historyFuture: [],
+      }
+    }),
+
+  undo: () =>
+    set((s) => {
+      if (s.historyPast.length === 0) {
+        return s
+      }
+      const prev = s.historyPast[s.historyPast.length - 1]!
+      const curr = cloneSerializedState({
+        selection: s.selection,
+        effects: s.effects,
+      })
+      return {
+        historyPast: s.historyPast.slice(0, -1),
+        historyFuture: [curr, ...s.historyFuture].slice(0, 10),
+        selection: prev.selection,
+        effects: prev.effects,
+      }
+    }),
+
+  redo: () =>
+    set((s) => {
+      if (s.historyFuture.length === 0) {
+        return s
+      }
+      const next = s.historyFuture[0]!
+      const curr = cloneSerializedState({
+        selection: s.selection,
+        effects: s.effects,
+      })
+      return {
+        historyFuture: s.historyFuture.slice(1),
+        historyPast: [...s.historyPast, curr].slice(-10),
+        selection: next.selection,
+        effects: next.effects,
+      }
+    }),
 
   setPlayback: (partial) =>
     set((s) => ({

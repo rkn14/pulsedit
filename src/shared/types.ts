@@ -15,6 +15,7 @@ export type SelectionRange = {
 }
 
 export type EffectType =
+  | 'trim'
   | 'gain'
   | 'fadeIn'
   | 'fadeOut'

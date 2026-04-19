@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 112.5%; /* ~18px si le navigateur est à 16px — augmente tout le texte en rem */
+}
+
 html,
 body,
 #root {
@@ -11,6 +15,11 @@ body,
 
 body {
   font-family: ui-sans-serif, system-ui, sans-serif;
+  color: #f4f4f5; /* zinc-100 — lisibilité sur fond sombre */
+}
+
+#root {
+  color: inherit;
 }
 
 /* Ascenseurs — thème sombre type DAW (Firefox) */
@@ -43,3 +52,53 @@ body {
 *::-webkit-scrollbar-corner {
   background: #161920;
 }
+
+/* Barre de défilement horizontale (contrôle React sous la forme d’onde) */
+.waveform-scroll-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.waveform-scroll-range:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.waveform-scroll-range::-webkit-slider-runnable-track {
+  height: 10px;
+  background: #161920;
+  border-radius: 5px;
+}
+
+.waveform-scroll-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 12px;
+  margin-top: -1px;
+  border-radius: 5px;
+  border: 2px solid #161920;
+  background: linear-gradient(180deg, #5c6b86 0%, #454e63 100%);
+}
+
+.waveform-scroll-range::-webkit-slider-thumb:hover {
+  background: linear-gradient(180deg, #6d7d98 0%, #556075 100%);
+}
+
+.waveform-scroll-range::-moz-range-track {
+  height: 10px;
+  background: #161920;
+  border-radius: 5px;
+}
+
+.waveform-scroll-range::-moz-range-thumb {
+  width: 36px;
+  height: 12px;
+  border: 2px solid #161920;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #5c6b86 0%, #454e63 100%);
+}
+
+/* Styles de la région d’édition WaveSurfer : injectés dans le shadow DOM (voir WaveformPanel). */

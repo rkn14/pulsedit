@@ -1,31 +1,8 @@
 import type { DecodeSuccessPayload } from '@shared/audioWorkerMessages'
+import { computeMonoPeaks } from './dsp/peaks'
 
 const TARGET_RATE = 44100
 const WAVEFORM_BARS = 2048
-
-function computeMonoPeaks(buffer: AudioBuffer, numBars: number): Float32Array {
-  const chCount = buffer.numberOfChannels
-  const len = buffer.length
-  const block = Math.max(1, Math.floor(len / numBars))
-  const out = new Float32Array(numBars)
-  for (let i = 0; i < numBars; i++) {
-    const start = i * block
-    const end = Math.min(start + block, len)
-    let peak = 0
-    for (let j = start; j < end; j++) {
-      let sum = 0
-      for (let c = 0; c < chCount; c++) {
-        sum += buffer.getChannelData(c)[j] ?? 0
-      }
-      const v = Math.abs(sum / chCount)
-      if (v > peak) {
-        peak = v
-      }
-    }
-    out[i] = peak
-  }
-  return out
-}
 
 function ensureAtMostStereo(input: AudioBuffer): AudioBuffer {
   const n = input.numberOfChannels

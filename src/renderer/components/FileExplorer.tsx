@@ -15,7 +15,7 @@ function windowsVolumeRoot(p: string): string | null {
 function Chevron({ open }: { open: boolean }) {
   return (
     <span
-      className="inline-block w-4 text-center text-zinc-500 select-none"
+      className="inline-block w-4 text-center text-zinc-300 select-none"
       aria-hidden
     >
       {open ? '▼' : '▶'}
@@ -102,7 +102,7 @@ function TreeRow({
     <button
       type="button"
       className={`flex w-full items-center gap-2 rounded px-1 py-0.5 text-left text-sm ${
-        isSelected ? 'bg-sky-900/40 text-sky-100' : 'text-zinc-400 hover:bg-surface-raised'
+        isSelected ? 'bg-sky-900/40 text-sky-100' : 'text-zinc-300 hover:bg-surface-raised'
       }`}
       style={{ paddingLeft: pad + 20 }}
       onClick={() => onSelectFile(entry.fullPath)}
@@ -204,12 +204,12 @@ export function FileExplorer() {
   return (
     <div className="flex h-full min-h-0 flex-col border-r border-surface-border bg-surface">
       <div className="shrink-0 border-b border-surface-border px-3 py-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-300">
           Explorateur
         </h2>
         {volumes.length > 0 && (
           <div className="mt-2">
-            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-600">
+            <p className="mb-1.5 text-[0.625rem] font-medium uppercase tracking-wide text-zinc-300">
               Volumes
             </p>
             <div className="flex max-h-[4.5rem] flex-wrap gap-1 overflow-y-auto pr-0.5">
@@ -223,10 +223,10 @@ export function FileExplorer() {
                     type="button"
                     title={vol.rootPath}
                     onClick={() => setExplorerCwd(vol.rootPath)}
-                    className={`rounded border px-2 py-0.5 text-[11px] font-medium tabular-nums transition-colors ${
+                    className={`rounded border px-2 py-0.5 text-[0.6875rem] font-medium tabular-nums transition-colors ${
                       isActive
                         ? 'border-sky-700/80 bg-sky-950/50 text-sky-200'
-                        : 'border-surface-border bg-surface-raised text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                        : 'border-surface-border bg-surface-raised text-zinc-300 hover:border-zinc-600 hover:text-zinc-200'
                     }`}
                   >
                     {vol.label}
@@ -237,7 +237,7 @@ export function FileExplorer() {
           </div>
         )}
         {explorerCwd && (
-          <p className="mt-2 truncate text-[11px] text-zinc-500" title={explorerCwd}>
+          <p className="mt-2 truncate text-[0.6875rem] text-zinc-300" title={explorerCwd}>
             {explorerCwd}
           </p>
         )}
@@ -245,7 +245,7 @@ export function FileExplorer() {
       <div className="min-h-0 flex-1 overflow-auto px-1 py-2">
         {error && <p className="px-2 text-xs text-red-400">{error}</p>}
         {!explorerCwd && !error && (
-          <p className="px-2 text-xs text-zinc-500">Chargement…</p>
+          <p className="px-2 text-xs text-zinc-300">Chargement…</p>
         )}
         {explorerCwd &&
           rootEntries.map((entry) => (
