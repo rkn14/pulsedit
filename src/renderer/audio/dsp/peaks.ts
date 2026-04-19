@@ -39,3 +39,33 @@ export function peaksFromDecodedPcm(
   }
   return computeMonoPeaks(fake, numBars)
 }
+
+function peaksSingleChannel(samples: Float32Array, numBars: number): Float32Array {
+  const len = samples.length
+  const out = new Float32Array(numBars)
+  if (len === 0) {
+    return out
+  }
+  const block = Math.max(1, Math.floor(len / numBars))
+  for (let i = 0; i < numBars; i++) {
+    const start = i * block
+    const end = Math.min(start + block, len)
+    let peak = 0
+    for (let j = start; j < end; j++) {
+      const v = Math.abs(samples[j] ?? 0)
+      if (v > peak) {
+        peak = v
+      }
+    }
+    out[i] = peak
+  }
+  return out
+}
+
+/** Une courbe de pics par canal (mono → 1 entrée, stéréo → 2). */
+export function peaksChannelsFromDecodedPcm(
+  pcm: { channelData: Float32Array[] },
+  numBars: number
+): Float32Array[] {
+  return pcm.channelData.map((ch) => peaksSingleChannel(ch, numBars))
+}

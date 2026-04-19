@@ -382,6 +382,7 @@ export function WaveformPanel() {
       }
     })
 
+    const stereo = r.pcm.channels === 2
     const ws = WaveSurfer.create({
       container,
       /* Même teinte avant / après la tête de lecture (pas de masque « progress » différent). */
@@ -391,7 +392,13 @@ export function WaveformPanel() {
       cursorWidth: 2,
       height: 'auto',
       normalize: true,
-      peaks: [r.waveformPeaks],
+      peaks: r.waveformPeaks,
+      splitChannels: stereo
+        ? [
+            { waveColor: '#7dd3fc', progressColor: '#7dd3fc' },
+            { waveColor: '#5eead4', progressColor: '#5eead4' },
+          ]
+        : undefined,
       duration: r.durationSec,
       minPxPerSec: WAVEFORM_BASE_MIN_PX_PER_SEC,
       fillParent: true,

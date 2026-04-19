@@ -1,10 +1,13 @@
 import type { SelectionRange } from '@shared/types'
+import type { PlaybackGraphHandle } from '@audio/graph'
+import { createPlaybackGraph } from '@audio/graph'
 import { getDecodedPcm } from './decodedRegistry'
 import { seekWaveformCursor } from './waveformBridge'
 import { useAppStore } from '@renderer/store/appStore'
 
 let audioCtx: AudioContext | null = null
 let activeSource: AudioBufferSourceNode | null = null
+let playbackGraph: PlaybackGraphHandle | null = null
 let rafId = 0
 let playbackAnchorCtxTime = 0
 let playbackOffsetSec = 0
@@ -54,6 +57,8 @@ function onSourceEnded(source: AudioBufferSourceNode): void {
   if (activeSource === source) {
     activeSource = null
   }
+  playbackGraph?.disconnect()
+  playbackGraph = null
   const end = playbackEndSec
   useAppStore.getState().setPlayback({ isPlaying: false, positionSec: end })
   seekWaveformCursor(end)
@@ -90,7 +95,14 @@ export function startPlaybackFromDecoded(assetId: string): void {
 
   const source = ctx.createBufferSource()
   source.buffer = buffer
-  source.connect(ctx.destination)
+  playbackGraph?.disconnect()
+  playbackGraph = createPlaybackGraph(
+    ctx,
+    useAppStore.getState().effects,
+    nCh === 2 ? 2 : 1
+  )
+  source.connect(playbackGraph.input)
+  playbackGraph.output.connect(ctx.destination)
 
   const when = ctx.currentTime
   playbackAnchorCtxTime = when
@@ -120,5 +132,7 @@ export function stopPlayback(): void {
     }
     activeSource = null
   }
+  playbackGraph?.disconnect()
+  playbackGraph = null
   useAppStore.getState().setPlayback({ isPlaying: false })
 }

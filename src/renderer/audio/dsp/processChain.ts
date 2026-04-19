@@ -1,15 +1,13 @@
-import type { EffectInstance, EffectType } from '@shared/types'
+import type { EffectInstance } from '@shared/types'
+import { EFFECT_CHAIN_ORDER } from '@shared/effectChainOrder'
 import type { DecodedPcm } from '../decodedRegistry'
+import {
+  applyChorus,
+  applyDelay,
+  applyReverb,
+  applyTremolo,
+} from './creativeEffects'
 import { clonePcm } from './clonePcm'
-
-const ORDER: EffectType[] = [
-  'trim',
-  'gain',
-  'fadeIn',
-  'fadeOut',
-  'normalize',
-  'stereoToMono',
-]
 
 function dbToLinear(db: number): number {
   return Math.pow(10, db / 20)
@@ -106,6 +104,28 @@ function applyNormalize(input: DecodedPcm, targetPeak: number): DecodedPcm {
   return out
 }
 
+/** Pan stéréo constant-power ; pan ∈ [-1,1]. À 0, pas de changement de niveau. */
+function applyPan(input: DecodedPcm, pan: number): DecodedPcm {
+  if (input.channels === 1) {
+    return clonePcm(input)
+  }
+  if (Math.abs(pan) < 1e-5) {
+    return clonePcm(input)
+  }
+  const p = Math.max(-1, Math.min(1, pan))
+  const t = ((p + 1) / 2) * (Math.PI / 2)
+  const gL = Math.cos(t)
+  const gR = Math.sin(t)
+  const out = clonePcm(input)
+  const L = out.channelData[0]!
+  const R = out.channelData[1]!
+  for (let i = 0; i < L.length; i++) {
+    L[i] *= gL
+    R[i] *= gR
+  }
+  return out
+}
+
 function applyStereoToMono(input: DecodedPcm): DecodedPcm {
   if (input.channels === 1) {
     return clonePcm(input)
@@ -137,6 +157,26 @@ function applyOne(input: DecodedPcm, fx: EffectInstance): DecodedPcm {
       return applyFadeOut(input, p.durationSec ?? 0)
     case 'normalize':
       return applyNormalize(input, p.targetPeak ?? 0.99)
+    case 'pan':
+      return applyPan(input, p.pan ?? 0)
+    case 'delay':
+      return applyDelay(
+        input,
+        p.delaySec ?? 0.2,
+        p.feedback ?? 0.35,
+        p.mix ?? 0.35
+      )
+    case 'reverb':
+      return applyReverb(input, p.room ?? 0.5, p.mix ?? 0.35)
+    case 'chorus':
+      return applyChorus(
+        input,
+        p.rateHz ?? 1.5,
+        p.depthMs ?? 12,
+        p.mix ?? 0.35
+      )
+    case 'tremolo':
+      return applyTremolo(input, p.rateHz ?? 5, p.depth ?? 0.4)
     case 'stereoToMono':
       return applyStereoToMono(input)
     default:
@@ -150,7 +190,7 @@ function applyOne(input: DecodedPcm, fx: EffectInstance): DecodedPcm {
 export function applyEffectChain(source: DecodedPcm, chain: EffectInstance[]): DecodedPcm {
   const enabled = chain.filter((e) => e.enabled)
   let buf = clonePcm(source)
-  for (const t of ORDER) {
+  for (const t of EFFECT_CHAIN_ORDER) {
     const fx = enabled.find((e) => e.type === t)
     if (fx) {
       buf = applyOne(buf, fx)

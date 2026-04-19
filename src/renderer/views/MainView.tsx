@@ -4,6 +4,26 @@ import { WaveformPanel } from '@renderer/components/WaveformPanel'
 import { EffectsPanel } from '@renderer/components/EffectsPanel'
 import { TransportBar } from '@renderer/components/TransportBar'
 import { useAppStore } from '@renderer/store/appStore'
+import {
+  startPlaybackFromDecoded,
+  stopPlayback,
+} from '@renderer/audio/playbackEngine'
+
+/** Espace : lecture sauf si le focus est dans un champ texte (pas les sliders). */
+function spaceBarShouldPlay(e: KeyboardEvent): boolean {
+  const t = e.target
+  if (t == null || !(t instanceof Element)) {
+    return true
+  }
+  if (t.closest('textarea, select, [contenteditable="true"]')) {
+    return false
+  }
+  const input = t.closest('input')
+  if (input instanceof HTMLInputElement) {
+    return input.type === 'range'
+  }
+  return true
+}
 
 export function MainView() {
   const undo = useAppStore((s) => s.undo)
@@ -11,6 +31,19 @@ export function MainView() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!spaceBarShouldPlay(e)) {
+          return
+        }
+        e.preventDefault()
+        const { playback, currentAsset } = useAppStore.getState()
+        if (playback.isPlaying) {
+          stopPlayback()
+        } else if (currentAsset) {
+          void startPlaybackFromDecoded(currentAsset.id)
+        }
+        return
+      }
       if (!(e.ctrlKey || e.metaKey)) {
         return
       }

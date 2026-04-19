@@ -1,5 +1,5 @@
 import { applyEffectChain } from './dsp/processChain'
-import { peaksFromDecodedPcm } from './dsp/peaks'
+import { peaksChannelsFromDecodedPcm } from './dsp/peaks'
 import { clonePcm } from './dsp/clonePcm'
 import {
   getSourcePcm,
@@ -12,7 +12,8 @@ const PEAK_BARS = 2048
 
 export type RebuildResult = {
   pcm: DecodedPcm
-  waveformPeaks: Float32Array
+  /** Une série de pics par canal (longueur 1 ou 2). */
+  waveformPeaks: Float32Array[]
   durationSec: number
 }
 
@@ -30,8 +31,8 @@ export function rebuildPreview(assetId: string): RebuildResult | null {
 
   const frames = pcm.channelData[0]?.length ?? 0
   const durationSec = frames / pcm.sampleRate
-  const waveformPeaks = peaksFromDecodedPcm(
-    { channelData: pcm.channelData, length: frames },
+  const waveformPeaks = peaksChannelsFromDecodedPcm(
+    { channelData: pcm.channelData },
     PEAK_BARS
   )
 
@@ -62,8 +63,8 @@ export function resetPreviewToSource(assetId: string): RebuildResult | null {
   registerPreviewPcm(assetId, pcm)
   const frames = pcm.channelData[0]?.length ?? 0
   const durationSec = frames / pcm.sampleRate
-  const waveformPeaks = peaksFromDecodedPcm(
-    { channelData: pcm.channelData, length: frames },
+  const waveformPeaks = peaksChannelsFromDecodedPcm(
+    { channelData: pcm.channelData },
     PEAK_BARS
   )
   useAppStore.getState().patchCurrentAsset({
